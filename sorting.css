@@ -4,11 +4,20 @@
   box-sizing: border-box;
   font-family: sans-serif;
 }
+.container-fluid {
+  background-color: #212529;
+  height: 100vh;
+}
 
 .bar {
-  width: 5px;
+  background-color: #44aaaa;
+  border: 1px solid #212529;
 }
 
 .done {
-  background-color: #99ff99 !important;
+  background-color: #0eff0e;
+}
+
+.active-bar {
+  background-color: red;
 }

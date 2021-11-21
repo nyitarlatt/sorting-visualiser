@@ -1,0 +1,18 @@
+{
+  "overrides": [
+    {
+      "files": "*.html",
+      "options": {
+        "printWidth": 300
+      }
+    },
+    {
+      "files": ["*.js"],
+      "options": {
+        "singleQuote": true,
+        "arrowParens": "avoid",
+        "printWidth": 80
+      }
+    }
+  ]
+}
