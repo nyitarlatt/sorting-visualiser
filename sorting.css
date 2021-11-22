@@ -8,7 +8,9 @@
   background-color: #212529;
   height: 100vh;
 }
-
+label {
+  user-select: none;
+}
 .bar {
   background-color: #44aaaa;
   border: 1px solid #212529;
@@ -20,4 +22,7 @@
 
 .active-bar {
   background-color: red;
+}
+.pivot {
+  background-color: #3333ff !important;
 }

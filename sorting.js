@@ -1,50 +1,39 @@
 'use strict';
 
 //global variables
-let barNum = 100;
-let delay = 100;
 
 const bar = document.querySelector('#arr_size');
 const speed = document.querySelector('#sort_speed');
+const btnNew = document.querySelector('#new-arr-btn');
+const btnBubble = document.querySelector('#bubble-btn');
+const btnSelect = document.querySelector('#selection-btn');
+const btnInsert = document.querySelector('#insertion-btn');
+const btnQuick = document.querySelector('#quick-btn');
+
+let barNum = +bar.value;
+let delay = -speed.value;
+
 newArr();
 ///event listeners
-document.querySelector('#new-arr-btn').addEventListener('click', newArr);
-document.querySelector('#bubble-btn').addEventListener('click', bubble);
-document.querySelector('#selection-btn').addEventListener('click', selection);
-document.querySelector('#insertion-btn').addEventListener('click', insertion);
+btnNew.addEventListener('click', newArr);
+btnBubble.addEventListener('click', bubble);
+btnSelect.addEventListener('click', selection);
+btnInsert.addEventListener('click', insertion);
+btnQuick.addEventListener('click', quick);
 
-//bar num
-bar.addEventListener('click', setBar);
-bar.addEventListener('mousedown', function () {
-  this.addEventListener('mouseup', function () {
-    this.removeEventListener('mousemove', setBar);
-  });
-  this.addEventListener('mousemove', setBar);
-});
-
-//speed
-speed.addEventListener('click', setSpeed);
-speed.addEventListener('mousedown', function () {
-  this.addEventListener('mouseup', function () {
-    this.removeEventListener('mousemove', setSpeed);
-  });
-  this.addEventListener('mousemove', setSpeed);
-});
+bar.addEventListener('input', setBar);
+speed.addEventListener('input', setSpeed);
 
 //set bar
 function setBar() {
-  barNum = bar.value;
+  barNum = +bar.value;
   newArr();
 }
 
 //set speed
 function setSpeed() {
-  if (speed.value < 0) {
-    delay = speed.value * -1;
-
-    return;
-  }
   delay = speed.value;
+  if (speed.value < 0) delay = -speed.value;
 }
 
 //new array
@@ -66,6 +55,11 @@ function newArr() {
   });
 }
 
+//wait
+const wait = function (ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+};
+
 //swap
 function swap(el1, el2) {
   const style1 = window.getComputedStyle(el1);
@@ -80,17 +74,23 @@ function swap(el1, el2) {
 
 //change color
 const active = function (el1, el2) {
-  el1.classList.add('active-bar');
+  el1.style.background = 'red';
   if (!el2) return;
-  el2.classList.add('active-bar');
+  el2.style.background = 'red';
 };
 const deActive = function (el1, el2) {
-  el1.classList.remove('active-bar');
+  el1.style.background = '#44aaaa';
   if (!el2) return;
-  el2.classList.remove('active-bar');
+  el2.style.background = '#44aaaa';
 };
 const finish = function (el) {
-  el.classList.add('done');
+  el.style.background = 'green';
+};
+const pivot = function (el) {
+  el.classList.add('pivot');
+};
+const rmPivot = function (el) {
+  el.classList.remove('pivot');
 };
 
 //get value
@@ -103,23 +103,30 @@ const getVal = function (el) {
 
 // Bubble sort
 async function bubble() {
+  let lucky = 1;
   const bars = document.querySelectorAll('.bar');
   let barsLen = bars.length;
-
   for (let j = 0; j < bars.length; j++) {
+    if (lucky === bars.length) {
+      bars.forEach(x => finish(x));
+      return;
+    }
+    lucky = 1;
     for (let i = 0; i < barsLen - 1; i++) {
       //get values
       let [v1, v2] = [getVal(bars[i]), getVal(bars[i + 1])];
 
       //active
       active(bars[i], bars[i + 1]);
-      await new Promise(resolve => setTimeout(resolve, delay));
+      await wait(delay);
 
       //check swap
       if (v1 > v2) {
         swap(bars[i], bars[i + 1]);
+        await wait(delay);
+      } else {
+        lucky++;
       }
-      await new Promise(resolve => setTimeout(resolve, delay));
 
       //deactive
       deActive(bars[i], bars[i + 1]);
@@ -147,7 +154,7 @@ async function selection() {
 
       //active
       active(bars[k], bars[j]);
-      await new Promise(resolve => setTimeout(resolve, delay));
+      await wait(delay);
 
       //check
       if (v2 < v1) {
@@ -161,12 +168,12 @@ async function selection() {
       //swap
       if (j + 1 === barslen) {
         swap(bars[k], bars[i]);
-        await new Promise(resolve => setTimeout(resolve, delay));
-        bars[i].classList.add('done');
+        await wait(delay);
+        finish(bars[i]);
 
         //change last bar color
         if (barslen === i + 2) {
-          bars[i + 1].classList.add('done');
+          finish(bars[i + 1]);
         }
       }
     }
@@ -183,11 +190,11 @@ async function insertion() {
 
     //active
     active(bars[i], bars[i + 1]);
-    await new Promise(resolve => setTimeout(resolve, delay));
+    await wait(delay);
 
     if (v1 > v2) {
       swap(bars[i], bars[i + 1]);
-      await new Promise(resolve => setTimeout(resolve, delay));
+      await wait(delay);
 
       //deactive
       deActive(bars[i], bars[i + 1]);
@@ -206,11 +213,11 @@ async function insertion() {
 
         //active
         active(bars[j], bars[j - 1]);
-        await new Promise(resolve => setTimeout(resolve, delay));
+        await wait(delay);
 
         //swap
         swap(bars[j], bars[j - 1]);
-        await new Promise(resolve => setTimeout(resolve, delay));
+        await wait(delay);
 
         //deactive
         deActive(bars[j], bars[j - 1]);
@@ -224,4 +231,49 @@ async function insertion() {
   }
   //change last bar color
   finish(bars[barslen - 1]);
+}
+
+//quick sort
+function quick() {
+  const bars = document.querySelectorAll('.bar');
+  const barslen = bars.length;
+
+  async function quickRecur(arr, start, end) {
+    if (start >= end) {
+      if (end >= 0) {
+        finish(arr[end]);
+      }
+      return;
+    }
+
+    const pivotValue = getVal(arr[end]);
+    let pivotIndex = start;
+    pivot(arr[pivotIndex]);
+    for (let i = start; i < end; i++) {
+      if (getVal(arr[i]) < pivotValue) {
+        //active
+        active(arr[i]);
+        await wait(delay);
+
+        swap(arr[i], arr[pivotIndex]);
+        pivotIndex++;
+
+        //deactive
+        deActive(arr[i]);
+      }
+    }
+    bars.forEach(x => {
+      if (x.classList.contains('pivot')) x.classList.remove('pivot');
+    });
+    finish(bars[pivotIndex]);
+
+    swap(arr[pivotIndex], arr[end]);
+    await wait(delay);
+    let index = pivotIndex;
+    quickRecur(arr, start, index - 1);
+    quickRecur(arr, index + 1, end);
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  }
+  quickRecur(bars, 0, barslen - 1);
 }
