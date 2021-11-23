@@ -9,6 +9,7 @@ const btnBubble = document.querySelector('#bubble-btn');
 const btnSelect = document.querySelector('#selection-btn');
 const btnInsert = document.querySelector('#insertion-btn');
 const btnQuick = document.querySelector('#quick-btn');
+const btnMerge = document.querySelector('#merge-btn');
 
 let barNum = +bar.value;
 let delay = -speed.value;
@@ -20,9 +21,30 @@ btnBubble.addEventListener('click', bubble);
 btnSelect.addEventListener('click', selection);
 btnInsert.addEventListener('click', insertion);
 btnQuick.addEventListener('click', quick);
+btnMerge.addEventListener('click', merge);
 
 bar.addEventListener('input', setBar);
 speed.addEventListener('input', setSpeed);
+
+//unavaiable
+function unAvaiable(el) {
+  document.querySelectorAll('.btn-sort').forEach(btn => {
+    btn.classList.add('disable');
+  });
+  if (!el) return;
+  el.classList.remove('disable');
+  el.style.pointerEvents = 'none';
+}
+
+//avaiable
+function avaiable() {
+  document.querySelectorAll('.btn-sort').forEach(btn => {
+    btn.classList.remove('disable');
+  });
+  document.querySelectorAll('.btn-sort').forEach(btn => {
+    btn.style.pointerEvents = '';
+  });
+}
 
 //set bar
 function setBar() {
@@ -38,6 +60,7 @@ function setSpeed() {
 
 //new array
 function newArr() {
+  avaiable();
   const arrBar = [];
   for (let i = 0; i < barNum; i++) {
     const rdNum = Math.trunc(Math.random() * 101) + 1;
@@ -54,6 +77,13 @@ function newArr() {
     document.querySelector('.bars').insertAdjacentHTML('beforeend', html);
   });
 }
+
+//done
+const done = function (arr) {
+  arr.forEach(x => {
+    x.style.background = 'purple';
+  });
+};
 
 //wait
 const wait = function (ms) {
@@ -103,12 +133,13 @@ const getVal = function (el) {
 
 // Bubble sort
 async function bubble() {
+  unAvaiable();
   let lucky = 1;
   const bars = document.querySelectorAll('.bar');
   let barsLen = bars.length;
   for (let j = 0; j < bars.length; j++) {
     if (lucky === bars.length) {
-      bars.forEach(x => finish(x));
+      done(bars);
       return;
     }
     lucky = 1;
@@ -138,10 +169,13 @@ async function bubble() {
       }
     }
   }
+  done(bars);
+  avaiable();
 }
 
 //selection sort
 async function selection() {
+  unAvaiable();
   const bars = document.querySelectorAll('.bar');
   const barslen = bars.length;
 
@@ -178,10 +212,13 @@ async function selection() {
       }
     }
   }
+  done(bars);
+  avaiable();
 }
 
 //insertion
 async function insertion() {
+  unAvaiable();
   const bars = document.querySelectorAll('.bar');
   const barslen = bars.length;
 
@@ -231,18 +268,20 @@ async function insertion() {
   }
   //change last bar color
   finish(bars[barslen - 1]);
+  done(bars);
+  avaiable();
 }
 
 //quick sort
-function quick() {
+async function quick() {
+  unAvaiable();
   const bars = document.querySelectorAll('.bar');
   const barslen = bars.length;
 
   async function quickRecur(arr, start, end) {
+    //check arr 0 or invalid
     if (start >= end) {
-      if (end >= 0) {
-        finish(arr[end]);
-      }
+      if (end >= 0) finish(arr[end]);
       return;
     }
 
@@ -255,6 +294,7 @@ function quick() {
         active(arr[i]);
         await wait(delay);
 
+        //swap with pivot
         swap(arr[i], arr[pivotIndex]);
         pivotIndex++;
 
@@ -267,13 +307,22 @@ function quick() {
     });
     finish(bars[pivotIndex]);
 
+    //put pivot to middle
     swap(arr[pivotIndex], arr[end]);
     await wait(delay);
     let index = pivotIndex;
-    quickRecur(arr, start, index - 1);
-    quickRecur(arr, index + 1, end);
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    //recursion
+    await quickRecur(arr, start, index - 1);
+    await quickRecur(arr, index + 1, end);
   }
-  quickRecur(bars, 0, barslen - 1);
+  await quickRecur(bars, 0, barslen - 1);
+  done(bars);
+  avaiable();
+}
+
+///
+async function merge() {
+  const bars = document.querySelectorAll('.bar');
+  const barslen = bars.length;
 }
