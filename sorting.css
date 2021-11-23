@@ -7,13 +7,20 @@
 .container-fluid {
   background-color: #212529;
   height: 100vh;
+  overflow-y: scroll;
+}
+.container-fluid::-webkit-scrollbar {
+  width: 0;
+}
+.bar-container {
+  height: auto;
 }
 label {
   user-select: none;
 }
 .bar {
   background-color: #44aaaa;
-  border: 1px solid #212529;
+  border-right: 1px solid #212529;
 }
 
 .done {
@@ -25,4 +32,18 @@ label {
 }
 .pivot {
   background-color: #3333ff !important;
+}
+
+.disable {
+  pointer-events: none;
+  color: red !important;
+  visibility: hidden;
+  position: relative;
+}
+.disable:after {
+  visibility: visible;
+  position: absolute;
+  top: 0;
+  left: 0;
+  content: "unavaiable!";
 }
