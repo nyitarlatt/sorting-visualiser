@@ -6,7 +6,7 @@
 }
 .container-fluid {
   background-color: #212529;
-  height: 100vh;
+  height: auto;
 }
 label {
   user-select: none;
