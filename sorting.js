@@ -31,7 +31,6 @@ function unAvaiable(el) {
   document.querySelectorAll('.btn-sort').forEach(btn => {
     btn.classList.add('disable');
   });
-  if (!el) return;
   el.classList.remove('disable');
   el.style.pointerEvents = 'none';
 }
@@ -133,7 +132,7 @@ const getVal = function (el) {
 
 // Bubble sort
 async function bubble() {
-  unAvaiable();
+  unAvaiable(this);
   let lucky = 1;
   const bars = document.querySelectorAll('.bar');
   let barsLen = bars.length;
@@ -175,7 +174,7 @@ async function bubble() {
 
 //selection sort
 async function selection() {
-  unAvaiable();
+  unAvaiable(this);
   const bars = document.querySelectorAll('.bar');
   const barslen = bars.length;
 
@@ -218,7 +217,7 @@ async function selection() {
 
 //insertion
 async function insertion() {
-  unAvaiable();
+  unAvaiable(this);
   const bars = document.querySelectorAll('.bar');
   const barslen = bars.length;
 
@@ -274,7 +273,7 @@ async function insertion() {
 
 //quick sort
 async function quick() {
-  unAvaiable();
+  unAvaiable(this);
   const bars = document.querySelectorAll('.bar');
   const barslen = bars.length;
 
@@ -325,4 +324,6 @@ async function quick() {
 async function merge() {
   const bars = document.querySelectorAll('.bar');
   const barslen = bars.length;
+
+  async function merge(left, right) {}
 }
