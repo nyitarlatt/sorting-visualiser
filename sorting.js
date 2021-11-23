@@ -322,8 +322,10 @@ async function quick() {
 
 ///
 async function merge() {
+  unAvaiable(this);
   const bars = document.querySelectorAll('.bar');
   const barslen = bars.length;
 
   async function merge(left, right) {}
+  avaiable();
 }
