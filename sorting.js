@@ -59,10 +59,9 @@ function setSpeed() {
 
 //new array
 function newArr() {
-  avaiable();
   const arrBar = [];
   for (let i = 0; i < barNum; i++) {
-    const rdNum = Math.trunc(Math.random() * 101) + 1;
+    const rdNum = Math.trunc(Math.random() * 110) + 1;
     arrBar.push(rdNum);
   }
   //clear olds
@@ -71,10 +70,11 @@ function newArr() {
   arrBar.forEach(bar => {
     const width = Math.floor(1000 / barNum);
     const html = `
-  <div class="bar" style="height:${bar * 3}px ;width:${width}px"></div>
+    <div class="bar" style="height:${bar * 3}px ;width:${width}px"></div>
     `;
     document.querySelector('.bars').insertAdjacentHTML('beforeend', html);
   });
+  avaiable();
 }
 
 //wait
@@ -84,7 +84,8 @@ const wait = function (ms) {
 
 //swap
 async function swap(el1, el2) {
-  let ms = delay < 100 ? 60 : delay < 300 ? 150 : 240;
+  //delay for animation
+  let ms = delay < 100 ? 60 : delay < 300 ? 100 : 200;
 
   const style1 = window.getComputedStyle(el1);
   const style2 = window.getComputedStyle(el2);
@@ -113,9 +114,9 @@ async function swap(el1, el2) {
 
 //change color
 const active = function (el1, el2) {
-  el1.style.background = 'rgb(241, 255, 119)';
+  el1.style.background = 'rgb(252, 255, 77)';
   if (!el2) return;
-  el2.style.background = 'rgb(241, 255, 119)';
+  el2.style.background = 'rgb(252, 255, 77)';
 };
 const deActive = function (el1, el2) {
   el1.style.background = '#44aaaa';
@@ -155,6 +156,7 @@ async function bubble() {
   for (let j = 0; j < bars.length; j++) {
     if (lucky === bars.length) {
       done(bars);
+      avaiable();
       return;
     }
     lucky = 1;
@@ -296,30 +298,44 @@ async function quick() {
   async function quickRecur(arr, start, end) {
     //check arr 0 or invalid
     if (start >= end) {
-      if (end >= 0) finish(arr[end]);
+      if (end >= 0) {
+        //active
+        active(arr[end]);
+        await wait(delay);
+        finish(arr[end]);
+      }
       return;
     }
 
     const pivotValue = getVal(arr[end]);
     let pivotIndex = start;
-    pivot(arr[pivotIndex]);
-    for (let i = start; i < end; i++) {
-      if (getVal(arr[i]) < pivotValue) {
-        //active
-        active(arr[i]);
-        await wait(delay);
 
+    //color pivot
+    pivot(arr[end]);
+    for (let i = start; i < end; i++) {
+      //active
+      active(arr[i], arr[pivotIndex]);
+      await wait(delay);
+
+      //check
+      if (getVal(arr[i]) < pivotValue) {
         //swap with pivot
         await swap(arr[i], arr[pivotIndex]);
-        pivotIndex++;
-
         //deactive
-        deActive(arr[i]);
+        deActive(arr[i], arr[pivotIndex]);
+
+        //next index
+        pivotIndex++;
+      } else {
+        //deactive
+        deActive(arr[i], arr[pivotIndex]);
       }
     }
+    //decolor pivot
     bars.forEach(x => {
       if (x.classList.contains('pivot')) x.classList.remove('pivot');
     });
+    //color finish
     finish(bars[pivotIndex]);
 
     //put pivot to middle
@@ -336,12 +352,77 @@ async function quick() {
   avaiable();
 }
 
-///
+///merge
 async function merge() {
   unAvaiable(this);
   const bars = document.querySelectorAll('.bar');
   const barslen = bars.length;
 
-  async function merge(left, right) {}
+  await mergeDivider(0, barslen - 1);
+  for (let counter = 0; counter < barslen; ++counter) {
+    done(bars);
+  }
+
+  async function mergeDivider(start, end) {
+    if (start < end) {
+      let mid = start + Math.floor((end - start) / 2);
+      await mergeDivider(start, mid);
+      await mergeDivider(mid + 1, end);
+      await mergeSort(start, mid, end);
+    }
+  }
+
+  async function mergeSort(start, mid, end) {
+    let newList = new Array();
+    let frontcounter = start;
+    let midcounter = mid + 1;
+
+    while (frontcounter <= mid && midcounter <= end) {
+      let fvalue = getVal(bars[frontcounter]);
+      let svalue = getVal(bars[midcounter]);
+      if (fvalue >= svalue) {
+        newList.push(svalue);
+        ++midcounter;
+      } else {
+        newList.push(fvalue);
+        ++frontcounter;
+      }
+    }
+    while (frontcounter <= mid) {
+      newList.push(getVal(bars[frontcounter]));
+      ++frontcounter;
+    }
+    while (midcounter <= end) {
+      newList.push(getVal(bars[midcounter]));
+      ++midcounter;
+    }
+
+    for (let c = start; c <= end; ++c) {
+      active(bars[c]);
+    }
+    for (
+      let c = start, point = 0;
+      c <= end && point < newList.length;
+      ++c, ++point
+    ) {
+      let ms = delay < 100 ? 60 : delay < 300 ? 100 : 200;
+      console.log(ms);
+      await wait(delay);
+      bars[c].animate(
+        {
+          height: `${newList[point]}px`,
+        },
+        ms
+      );
+      await wait(ms);
+      bars[c].style.height = `${newList[point]}px`;
+    }
+    for (let c = start; c <= end; ++c) {
+      finish(bars[c]);
+    }
+  }
+
+  //mergesort codes ref from gihub dharshakch97
+
   avaiable();
 }

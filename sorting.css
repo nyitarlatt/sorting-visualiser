@@ -13,7 +13,7 @@
   width: 0;
 }
 .bar-container {
-  height: auto;
+  height: 400px;
 }
 label {
   user-select: none;
@@ -21,15 +21,9 @@ label {
 .bar {
   background-color: #44aaaa;
   border-right: 1px solid #212529;
+  border-radius: 2px;
 }
 
-.done {
-  background-color: #0eff0e;
-}
-
-.active-bar {
-  background-color: violet;
-}
 .pivot {
   background-color: violet !important;
 }
