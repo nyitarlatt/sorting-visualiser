@@ -28,10 +28,10 @@ label {
 }
 
 .active-bar {
-  background-color: red;
+  background-color: violet;
 }
 .pivot {
-  background-color: #3333ff !important;
+  background-color: violet !important;
 }
 
 .disable {

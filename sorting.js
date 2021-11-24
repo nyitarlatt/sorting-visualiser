@@ -77,35 +77,45 @@ function newArr() {
   });
 }
 
-//done
-const done = function (arr) {
-  arr.forEach(x => {
-    x.style.background = 'purple';
-  });
-};
-
 //wait
 const wait = function (ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 };
 
 //swap
-function swap(el1, el2) {
+async function swap(el1, el2) {
+  let ms = delay < 100 ? 60 : delay < 300 ? 150 : 240;
+
   const style1 = window.getComputedStyle(el1);
   const style2 = window.getComputedStyle(el2);
 
-  const transfrom1 = style1.getPropertyValue('height');
-  const transfrom2 = style2.getPropertyValue('height');
+  const transform1 = style1.getPropertyValue('height');
+  const transform2 = style2.getPropertyValue('height');
 
-  el1.style.height = transfrom2;
-  el2.style.height = transfrom1;
+  //animate swap height
+  el1.animate(
+    {
+      height: transform2,
+    },
+    ms
+  );
+  await wait(ms);
+  el1.style.height = transform2;
+  el2.animate(
+    {
+      height: transform1,
+    },
+    ms
+  );
+  await wait(ms);
+  el2.style.height = transform1;
 }
 
 //change color
 const active = function (el1, el2) {
-  el1.style.background = 'red';
+  el1.style.background = 'rgb(241, 255, 119)';
   if (!el2) return;
-  el2.style.background = 'red';
+  el2.style.background = 'rgb(241, 255, 119)';
 };
 const deActive = function (el1, el2) {
   el1.style.background = '#44aaaa';
@@ -113,13 +123,19 @@ const deActive = function (el1, el2) {
   el2.style.background = '#44aaaa';
 };
 const finish = function (el) {
-  el.style.background = 'green';
+  el.style.background = '#3333ff';
 };
 const pivot = function (el) {
   el.classList.add('pivot');
 };
 const rmPivot = function (el) {
   el.classList.remove('pivot');
+};
+//done
+const done = function (arr) {
+  arr.forEach(x => {
+    x.style.background = '#0eff0e';
+  });
 };
 
 //get value
@@ -152,7 +168,7 @@ async function bubble() {
 
       //check swap
       if (v1 > v2) {
-        swap(bars[i], bars[i + 1]);
+        await swap(bars[i], bars[i + 1]);
         await wait(delay);
       } else {
         lucky++;
@@ -200,7 +216,7 @@ async function selection() {
 
       //swap
       if (j + 1 === barslen) {
-        swap(bars[k], bars[i]);
+        await swap(bars[k], bars[i]);
         await wait(delay);
         finish(bars[i]);
 
@@ -229,7 +245,7 @@ async function insertion() {
     await wait(delay);
 
     if (v1 > v2) {
-      swap(bars[i], bars[i + 1]);
+      await swap(bars[i], bars[i + 1]);
       await wait(delay);
 
       //deactive
@@ -252,7 +268,7 @@ async function insertion() {
         await wait(delay);
 
         //swap
-        swap(bars[j], bars[j - 1]);
+        await swap(bars[j], bars[j - 1]);
         await wait(delay);
 
         //deactive
@@ -294,7 +310,7 @@ async function quick() {
         await wait(delay);
 
         //swap with pivot
-        swap(arr[i], arr[pivotIndex]);
+        await swap(arr[i], arr[pivotIndex]);
         pivotIndex++;
 
         //deactive
@@ -307,7 +323,7 @@ async function quick() {
     finish(bars[pivotIndex]);
 
     //put pivot to middle
-    swap(arr[pivotIndex], arr[end]);
+    await swap(arr[pivotIndex], arr[end]);
     await wait(delay);
     let index = pivotIndex;
 
