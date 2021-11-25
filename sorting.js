@@ -10,9 +10,11 @@ const btnSelect = document.querySelector('#selection-btn');
 const btnInsert = document.querySelector('#insertion-btn');
 const btnQuick = document.querySelector('#quick-btn');
 const btnMerge = document.querySelector('#merge-btn');
+const aniSwitch = document.querySelector('#ani-switch');
 
 let barNum = +bar.value;
 let delay = -speed.value;
+let ms = delay < 100 ? 100 : delay < 300 ? 200 : 300;
 let curArr = 0;
 
 newArr();
@@ -23,7 +25,6 @@ btnSelect.addEventListener('click', selection);
 btnInsert.addEventListener('click', insertion);
 btnQuick.addEventListener('click', quick);
 btnMerge.addEventListener('click', merge);
-
 bar.addEventListener('input', setBar);
 speed.addEventListener('input', setSpeed);
 
@@ -80,15 +81,18 @@ function newArr() {
 }
 
 //wait
-const wait = function (ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+const wait = function (s) {
+  // animation delay
+  if (aniSwitch.checked) {
+    ms = delay < 100 ? 100 : delay < 300 ? 200 : 300;
+  } else {
+    ms = 0;
+  }
+  return new Promise(resolve => setTimeout(resolve, s));
 };
 
 //swap
 async function swap(el1, el2) {
-  //delay for animation
-  let ms = delay < 100 ? 60 : delay < 300 ? 100 : 200;
-
   const val1 = `${getVal(el1)}px`;
   const val2 = `${getVal(el2)}px`;
 
@@ -113,9 +117,9 @@ async function swap(el1, el2) {
 
 //change color
 const active = function (el1, el2) {
-  el1.style.background = '#3333ff';
+  el1.style.background = '#ff5555';
   if (!el2) return;
-  el2.style.background = '#3333ff';
+  el2.style.background = '#ff5555';
 };
 const deActive = function (el1, el2) {
   el1.style.background = '#44aaaa';
@@ -123,7 +127,7 @@ const deActive = function (el1, el2) {
   el2.style.background = '#44aaaa';
 };
 const finish = function (el) {
-  el.style.background = 'rgb(252, 255, 77)';
+  el.style.background = 'cyan';
 };
 const pivot = function (el) {
   el.classList.add('pivot');
@@ -156,6 +160,7 @@ async function bubble() {
   for (let j = 0; j < bars.length; j++) {
     if (lucky === bars.length) {
       done(bars);
+      if (curArr !== thisArr) return;
       avaiable();
       return;
     }
@@ -413,7 +418,6 @@ async function merge() {
       c <= end && point < newList.length;
       ++c, ++point
     ) {
-      let ms = delay < 100 ? 60 : delay < 300 ? 100 : 200;
       await wait(delay);
       bars[c].animate(
         {
