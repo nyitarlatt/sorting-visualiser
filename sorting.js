@@ -13,6 +13,7 @@ const btnMerge = document.querySelector('#merge-btn');
 
 let barNum = +bar.value;
 let delay = -speed.value;
+let curArr = 0;
 
 newArr();
 ///event listeners
@@ -59,6 +60,7 @@ function setSpeed() {
 
 //new array
 function newArr() {
+  curArr++;
   const arrBar = [];
   for (let i = 0; i < barNum; i++) {
     const rdNum = Math.trunc(Math.random() * 110) + 1;
@@ -87,36 +89,33 @@ async function swap(el1, el2) {
   //delay for animation
   let ms = delay < 100 ? 60 : delay < 300 ? 100 : 200;
 
-  const style1 = window.getComputedStyle(el1);
-  const style2 = window.getComputedStyle(el2);
-
-  const transform1 = style1.getPropertyValue('height');
-  const transform2 = style2.getPropertyValue('height');
+  const val1 = `${getVal(el1)}px`;
+  const val2 = `${getVal(el2)}px`;
 
   //animate swap height
   el1.animate(
     {
-      height: transform2,
+      height: val2,
     },
     ms
   );
   await wait(ms);
-  el1.style.height = transform2;
+  el1.style.height = val2;
   el2.animate(
     {
-      height: transform1,
+      height: val1,
     },
     ms
   );
   await wait(ms);
-  el2.style.height = transform1;
+  el2.style.height = val1;
 }
 
 //change color
 const active = function (el1, el2) {
-  el1.style.background = 'rgb(252, 255, 77)';
+  el1.style.background = '#3333ff';
   if (!el2) return;
-  el2.style.background = 'rgb(252, 255, 77)';
+  el2.style.background = '#3333ff';
 };
 const deActive = function (el1, el2) {
   el1.style.background = '#44aaaa';
@@ -124,7 +123,7 @@ const deActive = function (el1, el2) {
   el2.style.background = '#44aaaa';
 };
 const finish = function (el) {
-  el.style.background = '#3333ff';
+  el.style.background = 'rgb(252, 255, 77)';
 };
 const pivot = function (el) {
   el.classList.add('pivot');
@@ -140,16 +139,17 @@ const done = function (arr) {
 };
 
 //get value
-const getVal = function (el) {
+function getVal(el) {
   const style = window.getComputedStyle(el);
   let v = style.getPropertyValue('height');
   v = Number(v.slice(0, -2));
   return v;
-};
+}
 
 // Bubble sort
 async function bubble() {
   unAvaiable(this);
+  let thisArr = curArr;
   let lucky = 1;
   const bars = document.querySelectorAll('.bar');
   let barsLen = bars.length;
@@ -187,12 +187,14 @@ async function bubble() {
     }
   }
   done(bars);
+  if (curArr !== thisArr) return;
   avaiable();
 }
 
 //selection sort
 async function selection() {
   unAvaiable(this);
+  let thisArr = curArr;
   const bars = document.querySelectorAll('.bar');
   const barslen = bars.length;
 
@@ -230,12 +232,14 @@ async function selection() {
     }
   }
   done(bars);
+  if (curArr !== thisArr) return;
   avaiable();
 }
 
 //insertion
 async function insertion() {
   unAvaiable(this);
+  let thisArr = curArr;
   const bars = document.querySelectorAll('.bar');
   const barslen = bars.length;
 
@@ -286,12 +290,14 @@ async function insertion() {
   //change last bar color
   finish(bars[barslen - 1]);
   done(bars);
+  if (curArr !== thisArr) return;
   avaiable();
 }
 
 //quick sort
 async function quick() {
   unAvaiable(this);
+  let thisArr = curArr;
   const bars = document.querySelectorAll('.bar');
   const barslen = bars.length;
 
@@ -349,12 +355,14 @@ async function quick() {
   }
   await quickRecur(bars, 0, barslen - 1);
   done(bars);
+  if (curArr !== thisArr) return;
   avaiable();
 }
 
 ///merge
 async function merge() {
   unAvaiable(this);
+  let thisArr = curArr;
   const bars = document.querySelectorAll('.bar');
   const barslen = bars.length;
 
@@ -406,7 +414,6 @@ async function merge() {
       ++c, ++point
     ) {
       let ms = delay < 100 ? 60 : delay < 300 ? 100 : 200;
-      console.log(ms);
       await wait(delay);
       bars[c].animate(
         {
@@ -421,8 +428,7 @@ async function merge() {
       finish(bars[c]);
     }
   }
-
-  //mergesort codes ref from gihub dharshakch97
-
+  if (curArr !== thisArr) return;
   avaiable();
+  //mergesort codes ref from gihub dharshakch97
 }
